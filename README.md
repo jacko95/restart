@@ -1,16 +1,66 @@
-# restart
+# 🔁 Restart – Android / Flutter App Restart
 
-A new Flutter project.
+Questo repository implementa un **meccanismo di riavvio dell’app Android** tramite **codice Java nativo**, integrabile in un progetto **Flutter**.
 
-## Getting Started
+Il progetto espone funzionalità native Android per forzare il **restart completo dell’applicazione**, utile in casi come:
+- reset totale dello stato
+- applicazione di configurazioni critiche
+- logout “hard”
+- recovery dopo errori gravi
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ❓ Perché esiste questo progetto
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Questo progetto è stato creato perché **non esistevano package Flutter affidabili su pub.dev**
+che permettessero di **riavviare completamente un’app Android** in modo semplice e controllato.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+I package esistenti:
+- erano **abbandonati**
+- funzionavano solo parzialmente
+- non garantivano un vero *cold restart*
+- introducevano dipendenze inutili o comportamenti non chiari
+
+Per questo motivo la logica è stata implementata **direttamente in Java nativo**, esponendo
+un’interfaccia minimale verso Flutter tramite `MethodChannel`.
+
+L’obiettivo è:
+- avere **controllo totale** sul comportamento
+- evitare workaround instabili
+- non dipendere da librerie di terze parti
+
+---
+
+## 🧠 Come funziona (in breve)
+
+Il riavvio dell’app viene gestito **lato Android (Java)** tramite:
+- `Activity`
+- `Intent`
+- `PackageManager`
+- terminazione del processo corrente
+
+Dal lato Flutter, la funzionalità può essere invocata tramite **MethodChannel**.
+
+---
+
+## 📁 Struttura rilevante
+
+```text
+android/app/src/main/java/it/jacko/restart/
+├── MainActivity.java        # Entry point Android
+├── RestartModule.java       # Logica di restart dell’app
+```
+
+## ▶️ Come riavviare l’app
+
+Il riavvio dell’app **non è automatico**: viene eseguito **premendo un pulsante nell’interfaccia Flutter**.
+
+### 📱 Azione utente
+
+👉 **Premere il pulsante “Restart” (o equivalente)** presente nell’app.
+
+Quando il pulsante viene premuto:
+
+1. Flutter invia una chiamata tramite `MethodChannel`
+2. Il codice Java Android intercetta la chiamata
+3. L’app viene **chiusa e riavviata completamente**
